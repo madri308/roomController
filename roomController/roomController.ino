@@ -13,6 +13,8 @@ char auth[] = "QYGtwYnSKbdmRWejSz8SbyvRUPvyGLIs";
 #define REDPIN 5
 #define GREENPIN 6
 #define BLUEPIN 3
+#define SPEAKERPIN 7
+#define FANPIN 9
 BlynkTimer timer;
 int r, g, b;
 int FADESPEED =  5;
@@ -22,14 +24,17 @@ void setup(){
   Serial.begin(9600);
   pinMode(SDCARD_CS, OUTPUT);
   digitalWrite(SDCARD_CS, HIGH); // Deselect the SD card
-  pinMode(ONPIN, INPUT);
+  
+  pinMode(SPEAKERPIN, OUTPUT);
+  pinMode(FANPIN, OUTPUT);
 
   pinMode(REDPIN, OUTPUT);
   pinMode(GREENPIN, OUTPUT);
   pinMode(BLUEPIN, OUTPUT);
   
   Blynk.begin(auth);
-  timer.setInterval(3, controller);
+  digitalWrite(FANPIN,HIGH);
+  timer.setInterval(2, controller);
   Blynk.virtualWrite(V0,FADESPEED);
 }
 void loop(){
@@ -39,14 +44,14 @@ void loop(){
 BLYNK_WRITE(V0){//SPEED
   FADESPEED = param.asInt();
 }
+BLYNK_WRITE(V1){//FADE
+  Status = param.asInt();
+}
 BLYNK_WRITE(V2){//ZEBRA
   r = param[0].asInt();
   g = param[1].asInt();
   b = param[2].asInt();
   Status = 2;
-}
-BLYNK_WRITE(V1){//FADE
-  Status = param.asInt();
 }
 void off(){//APAGAR
   Status = 0;
